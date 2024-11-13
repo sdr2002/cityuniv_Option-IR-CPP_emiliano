@@ -5,7 +5,7 @@ from scipy.stats._stats_py import DescribeResult
 
 if __name__ == "__main__":
     # Define the path to the CSV file
-    for dynamics_name in ["BSModel", "GeoOUModel", "AriOUModel"]:
+    for dynamics_name in ["BSModel", "AriOUModel", "GeoOUModel"]:
         csv_fpath = f'../../montecarlo/Sterminals_{dynamics_name}.csv'  # Replace with your actual file path
 
         # Read the CSV file

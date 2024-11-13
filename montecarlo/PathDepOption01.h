@@ -22,7 +22,7 @@ public:
 
     ArthmAsianCall(double T_, double K_, int m_) : PathDepOption(T_, m_), K(K_) {}
 
-    double Payoff(SamplePath &S) override;
+    double Payoff(SamplePath &P) override;
 };
 
 class EuropeanCall : public PathDepOption {
@@ -31,7 +31,7 @@ public:
 
     EuropeanCall(double T_, double K_, int m_) : PathDepOption(T_, m_), K(K_) {}
 
-    double Payoff(SamplePath &S) override;
+    double Payoff(SamplePath &P) override;
 };
 
 class EuropeanPut : public PathDepOption {
@@ -40,7 +40,7 @@ public:
 
     EuropeanPut(double T_, double K_, int m_) : PathDepOption(T_, m_), K(K_) {}
 
-    double Payoff(SamplePath &S) override;
+    double Payoff(SamplePath &P) override;
 };
 
 #endif

@@ -16,7 +16,7 @@ class BSModel: public virtual Model
         BSModel(double S0_, double r_, double sigma_)
             : Model{S0_, r_}, sigma(sigma_) { srand(time(NULL)); }
 
-        void GenerateSamplePath(double T, int m, SamplePath& S) override;
+        void GenerateSamplePath(double T, int m, SamplePath& P) override;
 
         string toString() { return "BSModel"; };
 };

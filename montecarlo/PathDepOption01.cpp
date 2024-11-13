@@ -4,11 +4,11 @@
 double PathDepOption::PriceByMC(Model& Model, long N)
 {
     double H = 0.0;
-    SamplePath S(m);
+    SamplePath P(m);
     for (long i = 0; i < N; i++)
     {
-        Model.GenerateSamplePath(T, m, S);
-        const double Hi = Payoff(S);
+        Model.GenerateSamplePath(T, m, P);
+        const double Hi = Payoff(P);
         H += Hi;
     }
     const double ExpectedH = H / N;
@@ -20,12 +20,12 @@ double PathDepOption::PriceByMC(Model& Model, long N)
 double PathDepOption::PriceByMC(Model& Model, long N, vector<double>& Sterminals)
 {
     double H = 0.0;
-    SamplePath S(m);
+    SamplePath P(m);
     for (long i = 0; i < N; i++)
     {
-        Model.GenerateSamplePath(T, m, S);
-        Sterminals.push_back(S.back());
-        const double Hi = Payoff(S);
+        Model.GenerateSamplePath(T, m, P);
+        Sterminals.push_back(P.back());
+        const double Hi = Payoff(P);
         H += Hi;
     }
     const double ExpectedH = H / N;
@@ -34,22 +34,22 @@ double PathDepOption::PriceByMC(Model& Model, long N, vector<double>& Sterminals
     return DiscountFactor * ExpectedH;
 }
 
-double ArthmAsianCall::Payoff(SamplePath& S)
+double ArthmAsianCall::Payoff(SamplePath& P)
 {
     double Ave = 0.0;
-    for (int k = 0; k < m; k++) Ave += S[k];
+    for (int k = 0; k < m; k++) Ave += P[k];
     Ave /= m;
     return max(Ave - K, 0.0);
 }
 
-double EuropeanCall::Payoff(SamplePath& S)
+double EuropeanCall::Payoff(SamplePath& P)
 {
-    double Sf = S.back();
+    double Sf = P.back();
     return max(Sf - K, 0.0);
 }
 
-double EuropeanPut::Payoff(SamplePath& S)
+double EuropeanPut::Payoff(SamplePath& P)
 {
-    double Sf = S.back();
+    double Sf = P.back();
     return max(Sf - K, 0.0);
 }

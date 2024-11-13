@@ -3,14 +3,15 @@
 #include <cmath>
 
 
-void BSModel::GenerateSamplePath(double T, int m, SamplePath& S)
+void BSModel::GenerateSamplePath(double T, int m, SamplePath& P)
 {
+    /* Pt = P0 * exp[(r - 0.5 * sigma^2) * t] * exp[sigma * sqrt(t) * Gauss(.)]  */
     const double dt = T/m;
 
-    double St = GetP0();
+    double Pt = GetP0();
     for (int k = 0; k < m; k++)
     {
-        S[k] = St * exp((GetR() - 0.5 * sqrt(sigma)) * dt + sigma * sqrt(dt) * Gauss());
-        St = S[k];
+        P[k] = Pt * exp((GetR() - 0.5 * pow(sigma, 2)) * dt + sigma * sqrt(dt) * Gauss());
+        Pt = P[k];
     }
 }

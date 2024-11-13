@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iterator>
 #include <cmath>
+#include <filesystem>
 
 #include "AriOUModel.h"
 #include "GeoOUModel.h"
@@ -94,8 +95,10 @@ void render_over_KRange(Model& modelDynamics) {
              << endl;
     }
 
+    // current_path is ${repo_directory}/${cmake_output_directory}, hence going to parent then append 'montecarlo' to direct to the scripts folder
+    filesystem::path run_dir = filesystem::current_path().parent_path() / filesystem::path("montecarlo");
     string fname = "Sterminals_" + modelDynamics.toString() +".csv";
-    ofstream SterminalsFile("/home/sdr2002/dev/cityuniv_Option-IR-CPP_emiliano/montecarlo/" + fname);
+    ofstream SterminalsFile(run_dir / fname);
     ostream_iterator<double> out_it (SterminalsFile,"\n");
     copy(Sterminals.begin(), Sterminals.end(), out_it);
     cout << "Sterminals saved to " + fname << endl;
@@ -106,12 +109,16 @@ int main() {
     // evaluateWithBlackScholesDynamics();
     // evaluateWithOrnsteinUhlenbeckDynamics();
 
-    GeoOUModel geoOuModel(100.0, 0.03, 0.045, 0.06, 12*log(2), 0.2);
-    render_over_KRange(geoOuModel);
+    BSModel bsModel(100.0, 0.03, 0.2);
+    render_over_KRange(bsModel);
 
-    AriOUModel ariOuModel(100.0, 0.03, 0.045, 100.0, 12*log(2), 0.2);
+    AriOUModel ariOuModel(100.0, 0.03, 100.0, 52*log(2), 20.);
     render_over_KRange(ariOuModel);
 
-    BSModel bsModel(100.0, 0.05, 0.2);
-    render_over_KRange(bsModel);
+    /* Note sigma=25. is not realistic as it means the short-rate's volatility is 2500% per annum.
+     * sigma around 0.02 ~ 0.1 is more like a realistic number to represent the bond dynamics or such,
+     * but I put sigma=25. to provide the representative output of the stock distribution showing log-normal.
+     * TODO cross-check the legitimacy of the formula of GeoOUModel sampling*/
+    GeoOUModel geoOuModel(100.0, 0.03, 0.045, 0.02, 52*log(2), 25.);
+    render_over_KRange(geoOuModel);
 }
