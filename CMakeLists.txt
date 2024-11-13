@@ -41,9 +41,11 @@ add_executable(city_ir_fx
         montecarlo/PathDepOption01.cpp
         montecarlo/PathDepOption01.h
         montecarlo/Main.cpp
-        montecarlo/OUModel.cpp
-        montecarlo/OUModel.h
+        montecarlo/GeoOUModel.cpp
+        montecarlo/GeoOUModel.h
         montecarlo/ModelCommon.h
         montecarlo/Model.h
         montecarlo/ModelCommon.cpp
+        montecarlo/AriOUModel.cpp
+        montecarlo/AriOUModel.h
 )

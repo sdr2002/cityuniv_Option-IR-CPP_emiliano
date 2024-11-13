@@ -4,7 +4,8 @@
 #include <iterator>
 #include <cmath>
 
-#include "OUModel.h"
+#include "AriOUModel.h"
+#include "GeoOUModel.h"
 #include "PathDepOption01.h"
 
 using namespace std;
@@ -34,9 +35,9 @@ int evaluateWithBlackScholesDynamics()
 
 int evaluateWithOrnsteinUhlenbeckDynamics()
 {
-    cout << endl << "Running OUModel dynamics..." << endl;
-    double P0 = 100.0, r=0.03, s0=0.045, drift = 4*std::log(2.0), sigma = 0.2;
-    OUModel ouModel(P0, r, s0, drift, sigma);
+    cout << endl << "Running GeoOUModel dynamics..." << endl;
+    double P0 = 100.0, r=0.03, s0=0.045, sINF=0.0, drift = 4*std::log(2.0), sigma = 0.2;
+    GeoOUModel ouModel(P0, r, s0, sINF, drift, sigma);
 
     double T = 1.0 / 12.0, K = 100.0; // Expiry is 1 month.
     int m = 30;                       // Daily observations for one month!
@@ -56,6 +57,8 @@ int evaluateWithOrnsteinUhlenbeckDynamics()
 }
 
 void render_over_KRange(Model& modelDynamics) {
+
+    cout << endl << "Rendering " << modelDynamics.toString() << ":" << endl;
     // double T = 1.0 / 12.0, K = 100.0; // Expiry is 1 month.
     // int m = 30;                       // Daily observations for one month!
 
@@ -69,7 +72,7 @@ void render_over_KRange(Model& modelDynamics) {
 
     vector<double> Sterminals;
     bool TerminalStockPriceRecorded = false;
-    for (double K=97.5; K<=102.5; K+=0.1) {
+    for (double K=75; K<=125; K+=5.0) {
         StrikeRange.push_back(K);
 
         EuropeanCall EurCallOption(T, K, m);
@@ -92,7 +95,7 @@ void render_over_KRange(Model& modelDynamics) {
     }
 
     string fname = "Sterminals_" + modelDynamics.toString() +".csv";
-    ofstream SterminalsFile("/home/sdr2002/dev/city_irfx-cpp/lecture4/" + fname);
+    ofstream SterminalsFile("/home/sdr2002/dev/cityuniv_Option-IR-CPP_emiliano/montecarlo/" + fname);
     ostream_iterator<double> out_it (SterminalsFile,"\n");
     copy(Sterminals.begin(), Sterminals.end(), out_it);
     cout << "Sterminals saved to " + fname << endl;
@@ -103,9 +106,12 @@ int main() {
     // evaluateWithBlackScholesDynamics();
     // evaluateWithOrnsteinUhlenbeckDynamics();
 
-    OUModel ouModel(100.0, 0.03, 0.045, 12*log(2), 0.2);
-    render_over_KRange(ouModel);
+    GeoOUModel geoOuModel(100.0, 0.03, 0.045, 0.06, 12*log(2), 0.2);
+    render_over_KRange(geoOuModel);
 
-    BSModel bsModel(100.0, 0.03, 0.2);
+    AriOUModel ariOuModel(100.0, 0.03, 0.045, 100.0, 12*log(2), 0.2);
+    render_over_KRange(ariOuModel);
+
+    BSModel bsModel(100.0, 0.05, 0.2);
     render_over_KRange(bsModel);
 }
