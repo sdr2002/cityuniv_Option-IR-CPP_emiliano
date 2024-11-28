@@ -38,8 +38,8 @@ add_executable(city_ir_fx
 
         montecarlo/dynamics/BSModel01.cpp
         montecarlo/dynamics/BSModel01.h
-        montecarlo/PathDepOption01.cpp
-        montecarlo/PathDepOption01.h
+        montecarlo/simulation/PathDepOption01.cpp
+        montecarlo/simulation/PathDepOption01.h
         montecarlo/Main.cpp
         montecarlo/dynamics/GeoOUModel.cpp
         montecarlo/dynamics/GeoOUModel.h

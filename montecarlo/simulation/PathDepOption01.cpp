@@ -1,7 +1,7 @@
 #include "PathDepOption01.h"
 #include <cmath>
 
-double PathDepOption::PriceByMC(Model& Model, long N)
+double OptionToSample::PriceByMC(Model& Model, long N)
 {
     double H = 0.0;
     SamplePath P(m);
@@ -17,7 +17,7 @@ double PathDepOption::PriceByMC(Model& Model, long N)
     return DiscountFactor * ExpectedH;
 }
 
-double PathDepOption::PriceByMC(Model& Model, long N, vector<double>& Sterminals)
+double OptionToSample::PriceByMC(Model& Model, long N, vector<double>& Sterminals)
 {
     double H = 0.0;
     SamplePath P(m);

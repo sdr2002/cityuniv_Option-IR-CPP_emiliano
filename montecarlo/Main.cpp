@@ -4,12 +4,13 @@
 #include <iterator>
 #include <cmath>
 #include <filesystem>
+#include <memory>
 
 #include "dynamics/AriOUModel.h"
 #include "dynamics/GeoOUModel.h"
 #include "dynamics/BSModel01.h"
 
-#include "PathDepOption01.h"
+#include "simulation/PathDepOption01.h"
 
 using namespace std;
 
@@ -59,25 +60,33 @@ int evaluateWithOrnsteinUhlenbeckDynamics()
     return 0;
 }
 
-void render_over_KRange(Model& modelDynamics, double T, int m, double K=100.0, long N=30000) {
-
+void render_over_KRange(
+    Model& modelDynamics,
+    OptionToSample& optionBase,
+    long N = 30000, bool RecordTerminalStockPrice = false
+) {
     cout << endl << "Rendering " << modelDynamics.toString() << ":" << endl;
 
     vector<double> StrikeRange;
-    vector<double> EuropeanPVs;
+    vector<double> OptionPVs;
 
     vector<double> Sterminals;
-    bool TerminalStockPriceRecorded = false;
-    for (double K=75; K<=125; K+=5.0) {
+
+    for (double K = 75; K <= 125; K += 5.0) {
         StrikeRange.push_back(K);
 
-        EuropeanCall EurCallOption(T, K, m);
-        if (!TerminalStockPriceRecorded) {
-            EuropeanPVs.push_back(EurCallOption.PriceByMC(modelDynamics, N, Sterminals));
-            TerminalStockPriceRecorded = true;
-        }
-        else {
-            EuropeanPVs.push_back(EurCallOption.PriceByMC(modelDynamics, N));
+        OptionToSample* currentOption;
+        // Use the `createOption` method of the derived class
+        // Option 1: Use optionBase with setK()
+        optionBase.setK(K); currentOption = &optionBase;
+        // Option 2: Dynamically create a new option instance
+        // unique_ptr option(optionBase.createOption(K)); currentOption = option.get();// slow
+
+        if (!RecordTerminalStockPrice) {
+            OptionPVs.push_back(currentOption->PriceByMC(modelDynamics, N, Sterminals));
+            RecordTerminalStockPrice = true;
+        } else {
+            OptionPVs.push_back(currentOption->PriceByMC(modelDynamics, N));
         }
     }
 
@@ -86,7 +95,7 @@ void render_over_KRange(Model& modelDynamics, double T, int m, double K=100.0, l
          << endl;
     for (size_t i=0; i<StrikeRange.size(); i++) {
         cout << setw(10) << StrikeRange[i]
-             << setw(20) << EuropeanPVs[i]
+             << setw(20) << OptionPVs[i]
              << endl;
     }
 
@@ -103,25 +112,26 @@ void render_over_KRange(Model& modelDynamics, double T, int m, double K=100.0, l
 int main() {
     // evaluateWithBlackScholesDynamics();
     // evaluateWithOrnsteinUhlenbeckDynamics();
-    double K = 100.0;
     // double T = 1.0 / 12.0; // Expiry is 1 month.
     // int m = 30;  // Observations for one month
 
+    double K = 100.0;
     double T = 3.0 / 12.0; // Expiry is 1 quarter.
     int m = 13;            // Daily observations for 3 months!
 
-    long N = 30000;
+    EuropeanCall eurCall(T, K, m);
+    long N = 30000; // Number of paths to sample
 
     BSModel bsModel(100.0, 0.03, 0.2);
-    render_over_KRange(bsModel, T, m, K, N);
+    render_over_KRange(bsModel, eurCall, N);
 
     AriOUModel ariOuModel(100.0, 0.03, 100.0, 52*log(2), 20.);
-    render_over_KRange(ariOuModel, T, m, K, N);
+    render_over_KRange(ariOuModel, eurCall, N);
 
     /* Note sigma=25. is not realistic as it means the short-rate's volatility is 2500% per annum.
      * sigma around 0.02 ~ 0.1 is more like a realistic number to represent the bond dynamics or such,
      * but I put sigma=25. to provide the representative output of the stock distribution showing log-normal.
      * TODO cross-check the legitimacy of the formula of GeoOUModel sampling*/
     GeoOUModel geoOuModel(100.0, 0.03, 0.045, 0.02, 52*log(2), 25.);
-    render_over_KRange(geoOuModel, T, m, K, N);
+    render_over_KRange(geoOuModel, eurCall, N);
 }
