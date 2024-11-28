@@ -4,7 +4,6 @@
 #include <iterator>
 #include <cmath>
 #include <filesystem>
-#include <memory>
 
 #include "dynamics/AriOUModel.h"
 #include "dynamics/GeoOUModel.h"
@@ -117,21 +116,26 @@ int main() {
 
     double K = 100.0;
     double T = 3.0 / 12.0; // Expiry is 1 quarter.
-    int m = 13;            // Daily observations for 3 months!
+    int m = 13;            // Weeky observations for 3 months!
+    EuropeanCall eurCallShortTerm(T, m, K);
 
-    EuropeanCall eurCall(T, K, m);
     long N = 30000; // Number of paths to sample
 
+    /* Scenario 2: BS process stock dynamics model */
     BSModel bsModel(100.0, 0.03, 0.2);
-    render_over_KRange(bsModel, eurCall, N);
+    render_over_KRange(bsModel, eurCallShortTerm, N);
 
+    /* Scenario 2: OU process stock dynamics model */
     AriOUModel ariOuModel(100.0, 0.03, 100.0, 52*log(2), 20.);
-    render_over_KRange(ariOuModel, eurCall, N);
+    render_over_KRange(ariOuModel, eurCallShortTerm, N);
 
-    /* Note sigma=25. is not realistic as it means the short-rate's volatility is 2500% per annum.
+    /* Scenario 3: Geometric OU model
+     * Note lognormal distribution is only observable with extreme sigma values like 25. for short-term projection,
+     * which is not realistic as it means the short-rate's volatility is 2500% per annum.
      * sigma around 0.02 ~ 0.1 is more like a realistic number to represent the bond dynamics or such,
-     * but I put sigma=25. to provide the representative output of the stock distribution showing log-normal.
      * TODO cross-check the legitimacy of the formula of GeoOUModel sampling*/
-    GeoOUModel geoOuModel(100.0, 0.03, 0.045, 0.02, 52*log(2), 25.);
-    render_over_KRange(geoOuModel, eurCall, N);
+    GeoOUModel geoOuModel(100.0, 0.03, 0.045, 0.02, 2*log(2), 0.2);
+    // render_over_KRange(geoOuModel, eurCallShortTerm, N);
+    EuropeanCall eurCallLongTerm(10.0, 10*52, K);
+    render_over_KRange(geoOuModel, eurCallLongTerm, N);
 }
