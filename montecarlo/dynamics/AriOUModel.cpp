@@ -3,12 +3,12 @@
 //
 
 #include "AriOUModel.h"
-#include "ModelCommon.h"
+#include "../math/ModelCommon.h"
 #include <cmath>
 
 void AriOUModel::GenerateSamplePath(double T, int m, SamplePath& P)
 {
-    /* Random sample the security price by OU process as DIFFENTIAL of the price
+    /* Random sample the security price by OU process as DIFFERENTIAL of the price
      * The dynamics must be negative in order to pricing the zero coupon bond.
      *
      * From dPt = drift * (Pinf - Pt)*dt + volatility * Gaussian_t() * dt,
@@ -27,9 +27,9 @@ void AriOUModel::GenerateSamplePath(double T, int m, SamplePath& P)
     const double rho2 = 1 - decay2;
 
     double Pt = GetP0();
-    for (int k = 0; k < m; k++)
+    for (int i = 0; i < m; i++)
     {
-        P[k] = (Pt * decay) + (GetPinf() * rho) + sigma * sqrt( rho2 / (2 * drift)) * Gauss(); // P_{t+1}
-        Pt = P[k]; // Roll to next timestep
+        P[i] = (Pt * decay) + (GetPinf() * rho) + sigma * sqrt( rho2 / (2 * drift)) * Gauss(); // P_{t+1}
+        Pt = P[i]; // Roll to next timestep
     }
 }

@@ -1,7 +1,7 @@
 #ifndef PathDepOption01_h
 #define PathDepOption01_h
 
-#include "BSModel01.h"
+#include "dynamics/Model.h"
 
 class PathDepOption {
 public:

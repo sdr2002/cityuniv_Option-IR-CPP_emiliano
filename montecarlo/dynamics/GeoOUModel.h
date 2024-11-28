@@ -25,7 +25,7 @@ class GeoOUModel: public virtual Model
             : Model{P0_, r_}, s0(s0_), sINF(sinf_), drift(drift_), sigma(sigma_) { srand(time(NULL)); }
 
         GeoOUModel(double P0_, double r_, double s0_, double drift_, double sigma_)
-            : Model{P0_, r_}, s0(s0_), sINF(r_), drift(drift_), sigma(sigma_) { srand(time(NULL)); }
+            : Model{P0_, r_}, s0(s0_), sINF(0), drift(drift_), sigma(sigma_) { srand(time(NULL)); }
 
         void GenerateSamplePath(double T, int m, SamplePath& P) override;
         double GetSinf() { return sINF; }; // TODO validate if the asymptotic short-rate shall be the risk-free rate

@@ -5,8 +5,10 @@
 #include <cmath>
 #include <filesystem>
 
-#include "AriOUModel.h"
-#include "GeoOUModel.h"
+#include "dynamics/AriOUModel.h"
+#include "dynamics/GeoOUModel.h"
+#include "dynamics/BSModel01.h"
+
 #include "PathDepOption01.h"
 
 using namespace std;
@@ -57,16 +59,9 @@ int evaluateWithOrnsteinUhlenbeckDynamics()
     return 0;
 }
 
-void render_over_KRange(Model& modelDynamics) {
+void render_over_KRange(Model& modelDynamics, double T, int m, double K=100.0, long N=30000) {
 
     cout << endl << "Rendering " << modelDynamics.toString() << ":" << endl;
-    // double T = 1.0 / 12.0, K = 100.0; // Expiry is 1 month.
-    // int m = 30;                       // Daily observations for one month!
-
-    double T = 3.0 / 12.0, K = 100.0; // Expiry is 1 month.
-    int m = 13;                       // Daily observations for one month!
-
-    long N = 30000;
 
     vector<double> StrikeRange;
     vector<double> EuropeanPVs;
@@ -98,7 +93,7 @@ void render_over_KRange(Model& modelDynamics) {
     // current_path is ${repo_directory}/${cmake_output_directory}, hence going to parent then append 'montecarlo' to direct to the scripts folder
     filesystem::path run_dir = filesystem::current_path().parent_path() / filesystem::path("montecarlo");
     string fname = "Sterminals_" + modelDynamics.toString() +".csv";
-    ofstream SterminalsFile(run_dir / fname);
+    ofstream SterminalsFile(run_dir /"output"/ fname);
     ostream_iterator<double> out_it (SterminalsFile,"\n");
     copy(Sterminals.begin(), Sterminals.end(), out_it);
     cout << "Sterminals saved to " + fname << endl;
@@ -108,17 +103,25 @@ void render_over_KRange(Model& modelDynamics) {
 int main() {
     // evaluateWithBlackScholesDynamics();
     // evaluateWithOrnsteinUhlenbeckDynamics();
+    double K = 100.0;
+    // double T = 1.0 / 12.0; // Expiry is 1 month.
+    // int m = 30;  // Observations for one month
+
+    double T = 3.0 / 12.0; // Expiry is 1 quarter.
+    int m = 13;            // Daily observations for 3 months!
+
+    long N = 30000;
 
     BSModel bsModel(100.0, 0.03, 0.2);
-    render_over_KRange(bsModel);
+    render_over_KRange(bsModel, T, m, K, N);
 
     AriOUModel ariOuModel(100.0, 0.03, 100.0, 52*log(2), 20.);
-    render_over_KRange(ariOuModel);
+    render_over_KRange(ariOuModel, T, m, K, N);
 
     /* Note sigma=25. is not realistic as it means the short-rate's volatility is 2500% per annum.
      * sigma around 0.02 ~ 0.1 is more like a realistic number to represent the bond dynamics or such,
      * but I put sigma=25. to provide the representative output of the stock distribution showing log-normal.
      * TODO cross-check the legitimacy of the formula of GeoOUModel sampling*/
     GeoOUModel geoOuModel(100.0, 0.03, 0.045, 0.02, 52*log(2), 25.);
-    render_over_KRange(geoOuModel);
+    render_over_KRange(geoOuModel, T, m, K, N);
 }

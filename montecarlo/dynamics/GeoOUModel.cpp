@@ -3,7 +3,7 @@
 //
 
 #include "GeoOUModel.h"
-#include "ModelCommon.h"
+#include "../math/ModelCommon.h"
 #include <cmath>
 
 void GeoOUModel::GenerateSamplePath(double T, int m, SamplePath& P)
@@ -28,14 +28,14 @@ void GeoOUModel::GenerateSamplePath(double T, int m, SamplePath& P)
 
     double St = s0;
     double Pt = GetP0();
-    for (int k = 0; k < m; k++)
+    for (int i = 0; i < m; i++)
     {
         const double randomOutput = Gauss();
 
         const double S0_effect = exp(St * rho / drift);
         const double noise = exp(sigma/drift * sqrt(dt - 0.5 * (pow(rho,2.0) + 2*rho)/drift) * randomOutput);
-        P[k] = Pt * S0_effect * Sinf_effect * noise;
-        Pt = P[k];
+        P[i] = Pt * S0_effect * Sinf_effect * noise;
+        Pt = P[i];
         St += drift * (GetSinf() - St) * dt + sigma * randomOutput * dt;
     }
 }

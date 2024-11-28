@@ -36,16 +36,16 @@ add_executable(city_ir_fx
 #        binomial/lecture3/Main14.cpp
 #        binomial/lecture3/ex3_2.cpp
 
-        montecarlo/BSModel01.cpp
-        montecarlo/BSModel01.h
+        montecarlo/dynamics/BSModel01.cpp
+        montecarlo/dynamics/BSModel01.h
         montecarlo/PathDepOption01.cpp
         montecarlo/PathDepOption01.h
         montecarlo/Main.cpp
-        montecarlo/GeoOUModel.cpp
-        montecarlo/GeoOUModel.h
-        montecarlo/ModelCommon.h
-        montecarlo/Model.h
-        montecarlo/ModelCommon.cpp
-        montecarlo/AriOUModel.cpp
-        montecarlo/AriOUModel.h
+        montecarlo/dynamics/GeoOUModel.cpp
+        montecarlo/dynamics/GeoOUModel.h
+        montecarlo/math/ModelCommon.h
+        montecarlo/dynamics/Model.h
+        montecarlo/math/ModelCommon.cpp
+        montecarlo/dynamics/AriOUModel.cpp
+        montecarlo/dynamics/AriOUModel.h
 )
